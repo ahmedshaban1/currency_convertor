@@ -11,7 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.currencyconvertor.www.ui.theme.CurrencyConvertorTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
   override fun onCreate(
     savedInstanceState: Bundle?,
@@ -24,7 +26,7 @@ class MainActivity : ComponentActivity() {
           modifier = Modifier.fillMaxSize(),
           color = MaterialTheme.colorScheme.background,
         ) {
-          Greeting("Android")
+          Greeting(name = "Android")
         }
       }
     }
@@ -34,11 +36,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(
   name: String,
-  modifier: Modifier = Modifier,
 ) {
   Text(
     text = "Hello $name!",
-    modifier = modifier,
   )
 }
 
@@ -46,6 +46,6 @@ fun Greeting(
 @Composable
 fun GreetingPreview() {
   CurrencyConvertorTheme {
-    Greeting("Android")
+    Greeting(name = "Android")
   }
 }
