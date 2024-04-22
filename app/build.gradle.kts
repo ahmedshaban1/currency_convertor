@@ -2,8 +2,8 @@
 plugins {
   alias(libs.plugins.androidApplication)
   alias(libs.plugins.kotlinAndroid)
-  alias(libs.plugins.ktlint)
   alias(libs.plugins.kapt)
+  alias(libs.plugins.ktlint)
   alias(libs.plugins.hilt)
 }
 
@@ -78,6 +78,9 @@ dependencies {
   implementation(libs.okhttp)
   implementation(libs.okHttp.logging.interceptor)
   implementation(libs.compose.runtime)
+  implementation(libs.androidx.room.runtime)
+  kapt(libs.androidx.room.compiler)
+  implementation(libs.androidx.room.ktx)
   testImplementation(libs.mockk)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.test.ext.junit)

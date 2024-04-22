@@ -2,6 +2,8 @@ package com.currencyconvertor.www.ui.home.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.currencyconvertor.www.data.history.model.History
+import com.currencyconvertor.www.domian.usecases.AddHistoryUseCase
 import com.currencyconvertor.www.domian.usecases.GetCurrenciesUseCase
 import com.currencyconvertor.www.entities.CurrencyEntity
 import com.currencyconvertor.www.remote.Resource
@@ -23,7 +25,10 @@ data class HomeState(
 }
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val getCurrenciesUseCase: GetCurrenciesUseCase) : ViewModel() {
+class HomeViewModel @Inject constructor(
+  private val getCurrenciesUseCase: GetCurrenciesUseCase,
+  private val addHistoryUseCase: AddHistoryUseCase,
+) : ViewModel() {
   private val _state = MutableStateFlow(HomeState())
   val state = _state.asStateFlow()
 
@@ -81,6 +86,7 @@ class HomeViewModel @Inject constructor(private val getCurrenciesUseCase: GetCur
       )
     }
     convertFromToTo()
+    insertHistory()
   }
 
   fun updateSelectedToCurrency(
@@ -92,6 +98,7 @@ class HomeViewModel @Inject constructor(private val getCurrenciesUseCase: GetCur
       )
     }
     convertFromToTo()
+    insertHistory()
   }
 
   fun updateFromValue(
@@ -123,5 +130,27 @@ class HomeViewModel @Inject constructor(private val getCurrenciesUseCase: GetCur
       it.copy(currentFromValue = toValue)
     }
     convertFromToTo()
+  }
+
+  private fun insertHistory() {
+    val state = _state.value
+    if (state.isInputEnabled() &&
+      state.currentFromValue.isNotBlank() &&
+      state.currentToValue.isNotBlank()
+    ) {
+      val fromRate = state.selectedCurrencyFrom?.rate ?: 1f
+      val toRate = state.selectedCurrencyTo?.rate ?: 1f
+      val targetRate = toRate / fromRate
+      viewModelScope.launch {
+        addHistoryUseCase(
+          History(
+            timestamp = System.currentTimeMillis(),
+            fromCurrency = state.selectedCurrencyFrom?.name ?: "",
+            toCurrency = state.selectedCurrencyTo?.name ?: "",
+            toRate = targetRate,
+          ),
+        )
+      }
+    }
   }
 }
